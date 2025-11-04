@@ -16,6 +16,7 @@ app.use(rateLimiter);
 app.use(validateContentType);
 app.use(inputSanitizer);
 
+
 // CORS 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -45,12 +46,12 @@ app.get('/health', async (req, res) => {
 // Маршруты
 app.use('/api/bookings', bookingRoutes);
 
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Endpoint не найден',
-    message: `Маршрут ${req.originalUrl} не существует`
-  });
-});
+// app.use('*', (req, res) => {
+//   res.status(404).json({
+//     error: 'Endpoint не найден',
+//     message: `Маршрут ${req.originalUrl} не существует`
+//   });
+// });
 
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Global error handler:', error);
