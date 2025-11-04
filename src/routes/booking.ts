@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { reserveBooking } from '../controllers/bookingController';
+import { reserveBooking,createEvent } from '../controllers/bookingController';
 import { bookingValidationRules, xssSanitizer } from '../validators/bookingValidator';
 import { bookingRateLimiter } from '../middleware/security';
 
@@ -12,5 +12,7 @@ router.post(
   xssSanitizer,
   reserveBooking
 );
+// добавлен временно в таком кустарном виде и не по месту
+router.post('/create',createEvent)
 
 export default router;

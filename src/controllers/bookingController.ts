@@ -100,3 +100,69 @@ export const reserveBooking = async (req: Request, res: Response): Promise<Respo
     });
   }
 };
+// добавлен временно 
+export const createEvent = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ошибка валидации',
+        message: errors.array()[0].msg
+      });
+    }
+
+    const { name, total_seats } = req.body;
+
+    const existingEvent = await Event.findOne({
+      where: {
+        name, total_seats
+      }
+    });
+
+    if (existingEvent) {
+      return res.status(409).json({
+        success: false,
+        error: 'Событие с таким названием и датой уже существует'
+      });
+    }
+
+    const event = await Event.create({
+      name, total_seats
+    });
+
+    return res.status(201).json({
+      success: true,
+      event: {
+        id: event.id,
+        name: event.name,
+        total_seats: event.total_seats
+      },
+      message: 'Событие успешно создано'
+    });
+
+  } catch (error) {
+    console.error('Ошибка при создании события:', error);
+    
+    if (error instanceof Error) {
+      if (error.name === 'SequelizeDatabaseError') {
+        return res.status(500).json({
+          success: false,
+          error: 'Ошибка базы данных'
+        });
+      }
+      
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json({
+          success: false,
+          error: 'Ошибка валидации данных'
+        });
+      }
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: 'Внутренняя ошибка сервера'
+    });
+  }
+};
